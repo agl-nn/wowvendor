@@ -1,0 +1,26 @@
+# Installing nginx
+#
+# Adds the rpm-key for nginx
+- name: Add nginx rpm-key
+  rpm_key:
+    key: "https://nginx.org/keys/nginx_signing.key"
+    state: present
+# Add the nginx yum-repository
+- name: Adding nginx yum repository
+  yum_repository:
+    name: nginx-stable
+    description: nginx stable repo
+    baseurl: http://nginx.org/packages/centos/$releasever/$basearch/
+    gpgcheck: yes
+    gpgkey: https://nginx.org/keys/nginx_signing.key
+    enabled: yes
+# Install NGINX
+- name: Install nginx
+  yum:
+    name: nginx
+    state: present
+- name: Starting nginx service
+  systemd:
+     name: nginx
+     state: started
+     enabled: yes

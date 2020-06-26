@@ -1,0 +1,14 @@
+# Installing nginx
+#
+- name: clear default configuration
+  file:
+    path: /etc/nginx/conf.d/default.conf
+    state: absent
+- name: Configure nginx front
+  template:
+    src: front.conf.j2
+    dest: /etc/nginx/conf.d/front.conf
+- name: restart nginx
+  systemd:
+    name: nginx
+    state: restarted

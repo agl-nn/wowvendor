@@ -1,0 +1,15 @@
+# Installing nginx
+#
+# Adds the rpm-key for nginx
+- name: clear default configuration
+  file: 
+    path: /etc/nginx/conf.d/default.conf
+    state: absent
+- name: Configure nginx LB
+  template:
+    src: lb.conf.j2
+    dest: /etc/nginx/conf.d/lb.conf
+- name: restart nginx
+  systemd:
+    name: nginx
+    state: restarted

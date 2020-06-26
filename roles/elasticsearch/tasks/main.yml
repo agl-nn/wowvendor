@@ -1,0 +1,40 @@
+---
+#
+# Installing Elasticsearch
+#
+# Adds the rpm-key for Elasticsearch
+- name: Add Elasticsearch rpm-key
+  rpm_key:
+    key: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+    state: present
+# Add the Elasticsearch yum-repository
+- name: Adding Elasticsearch YUM repository
+  yum_repository:
+    name: elasticsearch
+    description: Elasticsearch repository for 7.x packages
+    baseurl: https://artifacts.elastic.co/packages/7.x/yum
+    gpgcheck: yes
+    gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    enabled: yes
+# Install Elasticsearch
+- name: Install Elasticsearch
+  yum:
+    name: elasticsearch
+    state: present
+# Update Elasticsearch config file to only allow localhost connections
+- name: Updating the config file to restrict outside access
+  lineinfile:
+    destfile: /etc/elasticsearch/elasticsearch.yml
+    regexp: 'network.host:'
+    line: 'network.host: localhost'
+- name: Updating the config file to restrict bind address
+  lineinfile:
+    destfile: /etc/elasticsearch/elasticsearch.yml
+    regexp: 'http.host:'
+    line: 'http.host: {{ elk_ip }}'
+# Restart Elasticsearch
+- name: Restarting Elasticsearch
+  systemd:
+    name: elasticsearch
+    state: restarted
+    enabled: yes

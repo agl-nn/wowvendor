@@ -1,0 +1,32 @@
+---
+#
+# Installing Kibana
+#
+# Add Kibana YUM-repository
+# Install Kibana
+- name: Install Kibana
+  yum:
+    name: kibana
+    state: present
+# Update kibana config file to only accept local connections
+- name: Updating the config file to restrict outside access
+  lineinfile:
+    destfile: /etc/kibana/kibana.yml
+    regexp: 'server.host:'
+    line: 'server.host: 0.0.0.0'
+- name: Update connect elasticsearch
+  lineinfile:
+    destfile: /etc/kibana/kibana.yml
+    regexp: 'elasticsearch.hosts:'
+    line: 'elasticsearch.hosts: ["http://{{ elk_ip }}:9200"]'
+# Enable Kibana service
+- name: Enabling Kibana service
+  systemd:
+    name: kibana
+    enabled: yes
+    daemon_reload: yes
+# Start Kibana service
+- name: Starting Kibana service
+  systemd:
+    name: kibana
+    state: restarted

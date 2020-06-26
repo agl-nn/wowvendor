@@ -1,0 +1,44 @@
+# Installing fileabeat
+#
+# Adds the rpm-key for Elasticsearch
+- name: Add Elasticsearch rpm-key
+  rpm_key:
+    key: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+    state: present
+# Add the Elasticsearch yum-repository
+- name: Adding Elasticsearch YUM repository
+  yum_repository:
+    name: elasticsearch
+    description: Elasticsearch repository for 7.x packages
+    baseurl: https://artifacts.elastic.co/packages/7.x/yum
+    gpgcheck: yes
+    gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    enabled: yes
+# Install Elasticsearch
+- name: Install Elasticsearch
+  yum:
+    name: filebeat
+    state: present
+- name: Enable module nginx
+  command: filebeat modules enable nginx
+- name: Configure filebeat
+  template: 
+   src=filebeat.yml.j2
+   dest=/etc/filebeat/filebeat.yml
+   owner=root
+   group=root
+   mode=0644
+- name: Wait for HTTP 200
+  uri:
+    url: http://{{ elk_ip }}:5601/api/status
+    status_code: 200
+  retries: 20
+  delay: 1
+  register: result
+  until: result.failed is defined
+  changed_when: false
+- name: Enabling filebeat service
+  systemd:
+    name: filebeat
+    enabled: yes
+    state: started

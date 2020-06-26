@@ -1,0 +1,7 @@
+---
+elk_ip: 10.7.30.14
+nginx_front_1_ip: 10.7.30.11
+nginx_front_2_ip: 10.7.30.12
+nginx_app_ip: 10.7.30.13
+lb_ip: 10.7.30.10
+

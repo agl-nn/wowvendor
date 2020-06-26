@@ -1,0 +1,13 @@
+---
+#
+# Installing Java 8
+#
+# Install Java 8
+- name: Install the Java 8 package
+  yum:
+    name: java-1.8.0-openjdk 
+    state: present
+- name: Install the Java 8 package developer
+  yum: 
+    name: java-1.8.0-openjdk-devel
+    state: present
